@@ -47,11 +47,9 @@ def loss_fct(pred, y, perts, ctrl=None, direction_lambda=1e-3, dict_filter=None)
             pred_p, y_p = pred[pert_mask], y[pert_mask]
             ctrl_ref = ctrl
 
-        # MSE loss（加权 gamma）
         mse_term = torch.mean((pred_p - y_p) ** (2 + gamma))
         total_loss = total_loss + mse_term
 
-        # 方向 loss
         direction_term = direction_lambda * torch.mean(
             (torch.sign(y_p - ctrl_ref) - torch.sign(pred_p - ctrl_ref)) ** 2
         )
@@ -105,7 +103,6 @@ class DataSplitter:
             train, test = self.get_split_list(unique_perts, test_size=test_size, test_perts=test_perts)
             train, val = self.get_split_list(train, test_size=val_size)
 
-        # 映射标签
         mapping = {x: 'train' for x in train}
         mapping.update({x: 'val' for x in val})
         mapping.update({x: 'test' for x in test})
